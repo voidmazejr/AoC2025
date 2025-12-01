@@ -1,0 +1,39 @@
+# Compiled executables
+day*[0-9]
+!day*.c
+*.exe
+*.out
+a.out
+
+# Input files (Advent of Code rules: don't share inputs publicly)
+inputs/
+*.txt
+
+# bin ignore
+bin/
+
+# Session cookie file (NEVER commit this!)
+session.txt
+.session
+
+# Object files
+*.o
+*.obj
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Backup files
+*.bak
+*~
