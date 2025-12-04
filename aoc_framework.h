@@ -30,7 +30,7 @@ char* read_session_cookie() {
     return cookie;
 }
 
-// Function to down™load input from Advent of Code
+// Function to download input from Advent of Code
 int download_input(int year, int day) {
     char url[256];
     char filename[64];
@@ -148,4 +148,4 @@ void free_lines(char **lines, int count) {
     free(lines);
 }
 
-#endif // AOC_FRAMEWORK_H
+#endif 
