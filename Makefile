@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 -O2
 
 # List your day solutions here
-DAYS = day01 day02
+DAYS = day01 day02 day03
 
 all: $(DAYS)
 

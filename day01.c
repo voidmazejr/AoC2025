@@ -37,6 +37,8 @@ void solve_part1(int day) {
 
 
 void solve_part2(int day) {
+    int line_count;
+    char **lines = read_input_lines(day, &line_count);
     char *input = read_input(day);
     if (!input) return;
 

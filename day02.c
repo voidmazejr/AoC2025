@@ -69,7 +69,7 @@ void solve_part1(int day) {
 // -----------------------Solution Here------------------------------
     const char *p = input;
     uint64_t total = 0;
-    
+
     while (*p != '\0') {
         uint64_t first_val, last_val;
         char *next;
@@ -88,7 +88,7 @@ void solve_part1(int day) {
                 total += num;
             }
         }
-            
+        
         
         p = next;
         while (*p == ',' || *p == ' ' || *p == '\n') {
