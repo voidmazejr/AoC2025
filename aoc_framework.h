@@ -8,20 +8,20 @@
 #include <sys/stat.h>
 
 // Function to check if a file exists
-int file_exists(const char *filename) {
+static int file_exists(const char *filename) {
     struct stat buffer;
     return (stat(filename, &buffer) == 0);
 }
 
 // Function to read session cookie from file
-char* read_session_cookie() {
+static char* read_session_cookie() {
     FILE *file = fopen("session.txt", "r");
     if (!file) {
         printf("Error: session.txt not found. Create it with your AOC session cookie.\n");
         return NULL;
     }
     
-    char *cookie = malloc(256);
+    char *cookie = (char*)malloc(256);
     if (fgets(cookie, 256, file)) {
         // Remove newline
         cookie[strcspn(cookie, "\n")] = 0;
@@ -31,12 +31,12 @@ char* read_session_cookie() {
 }
 
 // Function to download input from Advent of Code
-int download_input(int year, int day) {
+static int download_input(int year, int day) {
     char url[256];
     char filename[64];
     char command[512];
     
-    sprintf(filename, "inputs/day%02d.txt", day);
+    snprintf(filename, sizeof(filename), "inputs/day%02d.txt", day);
     
     // Check if already downloaded
     if (file_exists(filename)) {
@@ -54,8 +54,8 @@ int download_input(int year, int day) {
     system("mkdir -p inputs");
     
     // Build curl command
-    sprintf(url, "https://adventofcode.com/%d/day/%d/input", year, day);
-    sprintf(command, "curl -s -b \"session=%s\" -o \"%s\" \"%s\"", 
+    snprintf(url, sizeof(url), "https://adventofcode.com/%d/day/%d/input", year, day);
+    snprintf(command, sizeof(command), "curl -s -b \"session=%s\" -o \"%s\" \"%s\"", 
             session_cookie, filename, url);
     
     printf("Downloading input for day %d...\n", day);
@@ -73,9 +73,9 @@ int download_input(int year, int day) {
 }
 
 // Function to read entire input file into a string
-char* read_input(int day) {
+static char* read_input(int day) {
     char filename[64];
-    sprintf(filename, "inputs/day%02d.txt", day);
+    snprintf(filename, sizeof(filename), "inputs/day%02d.txt", day);
     
     FILE *file = fopen(filename, "r");
     if (!file) {
@@ -89,7 +89,7 @@ char* read_input(int day) {
     fseek(file, 0, SEEK_SET);
     
     // Allocate buffer and read
-    char *content = malloc(size + 1);
+    char *content = (char*)malloc(size + 1);
     if (content) {
         fread(content, 1, size, file);
         content[size] = '\0';
@@ -100,9 +100,9 @@ char* read_input(int day) {
 }
 
 // Function to read input line by line
-char** read_input_lines(int day, int *line_count) {
+static char** read_input_lines(int day, int *line_count) {
     char filename[64];
-    sprintf(filename, "inputs/day%02d.txt", day);
+    snprintf(filename, sizeof(filename), "inputs/day%02d.txt", day);
     
     FILE *file = fopen(filename, "r");
     if (!file) {
@@ -124,7 +124,7 @@ char** read_input_lines(int day, int *line_count) {
     rewind(file);
     
     // Allocate array of string pointers
-    char **lines = malloc(count * sizeof(char*));
+    char **lines = (char**)malloc(count * sizeof(char*));
     char buffer[4096];
     int i = 0;
     
@@ -141,7 +141,7 @@ char** read_input_lines(int day, int *line_count) {
 }
 
 // Function to free lines array
-void free_lines(char **lines, int count) {
+static void free_lines(char **lines, int count) {
     for (int i = 0; i < count; i++) {
         free(lines[i]);
     }
