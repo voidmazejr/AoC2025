@@ -1,28 +1,16 @@
-#include "aoc_framework.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
+#include "aoc.h"
 
-//-----------------------Help Functions------------------------------
-// ------------------------------------------------------------------
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 
-void solve_part1(int day) {
-    int line_count;
-    char **lines = read_input_lines(day, &line_count);
-    if (!lines) return;
+// ── Part 1 ────────────────────────────────────────────────────────────────────
+char *part1(Input *in) {
 
-    printf("Part 1 Solution:\n");
-
-// -----------------------Solution Here------------------------------
-    
     int result = 0;
 
-    for (int i = 0; i < line_count; i++) {
+    for (int i = 0; i < in->line_count; i++) {
         
-        int strLenght = strlen(lines[i]);
+        int strLenght = strlen(in->lines[i]);
 
         int *arr = malloc(strLenght * sizeof(int));
         if (arr == NULL) {
@@ -31,7 +19,7 @@ void solve_part1(int day) {
         }
 
         for (int j = 0; j < strLenght; j++) {
-            arr[j] = lines[i][j] - '0';
+            arr[j] = in->lines[i][j] - '0';
         }
 
         // check for the 2 biggest nums:
@@ -56,139 +44,53 @@ void solve_part1(int day) {
             
             }
         }
-        printf("Max Joltage for Arr %d: %d \n", i + 1, max_jolt);
+        // printf("Max Joltage for Arr %d: %d \n", i + 1, max_jolt);
         result += max_jolt;
     
         free(arr);
     }
-    printf("Total = %d\n", result);
-
-// ------------------------------------------------------------------   
-
-    free_lines(lines, line_count);
+    
+    return aoc_ll(result);
 }
 
-
-
-void solve_part2(int day) {
-    int line_count;
-    char **lines = read_input_lines(day, &line_count);
-    if (!lines) return;
-    char *input = read_input(day);
-    if (!input) return;
-
-    // printf("Part 2 Solution:\n");
+// ── Part 2 ────────────────────────────────────────────────────────────────────
+char *part2(Input *in) {
     
-// -----------------------Solution Here------------------------------ 
-    int MAX_TOTAL_LEN = 1000;
+    unsigned long long total_sum = 0;
+    const int TARGET_LEN = 12;
 
-    char total_jolt[MAX_TOTAL_LEN];
-    strcpy(total_jolt, "0"); // Initialize the running sum
-    char new_total_buffer[MAX_TOTAL_LEN];
+    for (int i = 0; i < in->line_count; i++) {
+        char *line = in->lines[i];
+        int n = strlen(line);
+        if (n < TARGET_LEN) continue;
 
+        char result_digits[13]; 
+        int current_start = 0;
 
-    for (int i = 0; i < line_count; i++) {
-        
-        int bankLenght = strlen(lines[i]);
+        // Greedy selection of 12 digits
+        for (int k = 0; k < TARGET_LEN; k++) {
+            int max_digit = -1;
+            int best_idx = current_start;
 
-        int *bank = malloc(bankLenght * sizeof(int));
-        if (bank == NULL) {
-            perror("Failed to alloc mem!");
-            exit(EXIT_FAILURE);
-        }
+            // We must leave (TARGET_LEN - 1 - k) digits available after this one
+            int look_ahead_limit = n - (TARGET_LEN - k);
 
-        for (int j = 0; j < bankLenght; j++) {
-            bank[j] = lines[i][j] - '0';
-        }
-
-        // jolt calc
-        int desired_ammount = 12;
-
-        if(bankLenght < desired_ammount) {
-            free(bank);
-            continue;
-        }
-
-        char max_jolt_str[desired_ammount + 1];
-        max_jolt_str[desired_ammount] = '\0';
-
-        int start_index = 0;
-
-        for (int k = 0; k < desired_ammount; k++) {
-            int end_index = bankLenght - (desired_ammount - k);
-
-            int max_digi_val = -1;
-            int max_index = start_index;
-
-            for (int j = start_index; j <= end_index; j++) {
-                if (bank[j] > max_digi_val) {
-                    max_digi_val = bank[j];
-                    max_index = j;
+            for (int j = current_start; j <= look_ahead_limit; j++) {
+                int val = line[j] - '0';
+                if (val > max_digit) {
+                    max_digit = val;
+                    best_idx = j;
+                    if (max_digit == 9) break; 
                 }
-                if (max_digi_val == 9) break;
             }
-
-            max_jolt_str[k] = max_digi_val + '0';
-            start_index = max_index + 1;
-
+            result_digits[k] = max_digit + '0';
+            current_start = best_idx + 1;
         }
-        // --- 2. Large Number Addition: Add max_joltage_str to total_joltage ---
-        
-        // Indices start from the end of the strings (LSD)
-        int len1 = strlen(total_jolt);
-        int len2 = strlen(max_jolt_str);
-        
-        int i1 = len1 - 1;
-        int i2 = len2 - 1;
-        
-        // sum_idx starts at the end of the result buffer
-        int sum_idx = (len1 > len2 ? len1 : len2);
-        int carry = 0;
+        result_digits[TARGET_LEN] = '\0';
 
-        // Initialize the new sum string buffer
-        new_total_buffer[sum_idx + 1] = '\0'; 
-
-        // Perform addition, working backward
-        while (i1 >= 0 || i2 >= 0 || carry) {
-            // Get digits (or 0 if the index is out of bounds)
-            int d1 = (i1 >= 0) ? total_jolt[i1--] - '0' : 0;
-            int d2 = (i2 >= 0) ? max_jolt_str[i2--] - '0' : 0;
-            
-            int sum = d1 + d2 + carry;
-            
-            carry = sum / 10;
-            new_total_buffer[sum_idx--] = (sum % 10) + '0';
-        }
-        
-        // Copy the result back to total_joltage, removing any leading space/zero from the buffer
-        strcpy(total_jolt, &new_total_buffer[sum_idx + 1]); 
-
-        
-        free(bank);
-    } 
-
-    printf("Part 2 Solution: %s\n", total_jolt);
-
-
-
-// ------------------------------------------------------------------    
-
-    free(input);
-}
-
-
-
-int main() {
-    int year = 2025;
-    int day = 3;
-
-    // Download input if not already cached
-    download_input(year, day);
-    
-    // Solve both parts
-    solve_part1(day);
-    printf("\n");
-    solve_part2(day);
-    
-    return 0;
+        // Convert the 12-digit string to a number and add to total
+        total_sum += strtoull(result_digits, NULL, 10);
+    }
+ 
+    return aoc_ll(total_sum);
 }

@@ -1,10 +1,6 @@
-#include "aoc_framework.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include "aoc.h"
 
-//-----------------------Help Functions------------------------------
+// ── Helpers ───────────────────────────────────────────────────────────────────
 bool inv_ID_1(uint64_t num) {
     char str[32];
     sprintf(str, "%llu", num);
@@ -55,19 +51,11 @@ bool inv_ID_2(uint64_t num) {
     }
     return false;
 } 
-// ------------------------------------------------------------------
 
-
-void solve_part1(int day) {
-    char *input = read_input(day);
-    int line_count;
-    char **lines = read_input_lines(day, &line_count);
-    if (!lines) return;
-
-    printf("Part 1 Solution:\n");
-
-// -----------------------Solution Here------------------------------
-    const char *p = input;
+// ── Part 1 ────────────────────────────────────────────────────────────────────
+char *part1(Input *in) {
+    
+    const char *p = in->raw;
     uint64_t total = 0;
 
     while (*p != '\0') {
@@ -80,39 +68,26 @@ void solve_part1(int day) {
         p = next + 1;
         last_val = strtoull(p, &next, 10);
         
-        printf("Range: %llu to %llu\n", first_val, last_val);
+        // printf("Range: %llu to %llu\n", first_val, last_val);
 
         for (uint64_t num = first_val; num <= last_val; num++) {
             if (inv_ID_1(num)) {
-                printf("Invalid ID: %llu\n", num);
+                // printf("Invalid ID: %llu\n", num);
                 total += num;
             }
         }
-        
-        
         p = next;
         while (*p == ',' || *p == ' ' || *p == '\n') {
             p++;
         }
     }
-    printf("Total sum of invalid IDs: %llu\n", total);
-
-// ------------------------------------------------------------------   
-
-    free_lines(lines, line_count);
+    return aoc_ll(total);
 }
 
-
-
-
-void solve_part2(int day) {
-    char *input = read_input(day);
-    if (!input) return;
-
-    printf("Part 2 Solution:\n");
+// ── Part 2 ────────────────────────────────────────────────────────────────────
+char *part2(Input *in) {
     
-// -----------------------Solution Here------------------------------ 
-    const char *p = input;
+    const char *p = in->raw;
     uint64_t total = 0;
     
     while (*p != '\0') {
@@ -125,41 +100,19 @@ void solve_part2(int day) {
         p = next + 1;
         last_val = strtoull(p, &next, 10);
         
-        printf("Range: %llu to %llu\n", first_val, last_val);
+        // printf("Range: %llu to %llu\n", first_val, last_val);
 
         for (uint64_t num = first_val; num <= last_val; num++) {
             if (inv_ID_2(num)) {
-                printf("Invalid ID: %llu\n", num);
+                // printf("Invalid ID: %llu\n", num);
                 total += num;
             }
         }
             
-        
         p = next;
         while (*p == ',' || *p == ' ' || *p == '\n') {
             p++;
         }
     }
-    printf("Total sum of invalid IDs: %llu\n", total);
-
-// ------------------------------------------------------------------    
-
-    free(input);
-}
-
-
-
-int main() {
-    int year = 2025;
-    int day = 2;
-
-    // Download input if not already cached
-    download_input(year, day);
-    
-    // Solve both parts
-    solve_part1(day);
-    printf("\n");
-    solve_part2(day);
-    
-    return 0;
+    return aoc_ll(total);
 }
